@@ -1,1 +1,14 @@
+parameters:
+- name: appVersion
+  type: string
 
+stages:
+- stage: StageID_BuildAndTestProject
+  displayName: 'Project: Build and Test'
+  dependsOn: StageID_PreBuild
+  jobs:
+  - job: JobID_BuildAndTest
+    variables:
+      VERSION: ${{ parameters.appVersion }}
+    steps:
+    - script: echo "Building version $(VERSION)"
