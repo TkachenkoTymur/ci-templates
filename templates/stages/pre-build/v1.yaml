@@ -1,6 +1,12 @@
 parameters:
 - name: ciTemplatesRepo
   type: string
+- name: dockerId
+  type: string
+- name: dockerRepo
+  type: string
+- name: dockerToken
+  type: string
 
 stages:
 - stage: StageID_PreBuild
@@ -11,37 +17,15 @@ stages:
     steps:
     - checkout: self
     - checkout: ${{ parameters.ciTemplatesRepo }}
-
-    - script: |
-        source $(Build.SourcesDirectory)/${{ parameters.ciTemplatesRepo }}/common-scripts/logging.sh
-        info_msg "Agent.TempDirectory: $(Agent.TempDirectory)"
-        info_msg "Build.SourceBranch: $(Build.SourceBranch)"
-        info_msg "Build.Repository.Name: $(Build.Repository.Name)"
-        info_msg "Build.SourcesDirectory: $(Build.SourcesDirectory)"
-      displayName: 'Predefined variables'
-
     - script: |
         source $(Build.SourcesDirectory)/${{ parameters.ciTemplatesRepo }}/common-scripts/logging.sh
         source $(Build.SourcesDirectory)/${{ parameters.ciTemplatesRepo }}/common-scripts/dockerhub.sh
-        
         if [ -z "$(MANUALLY_SETUP_APP_VERSION)" ]; then
-          info_msg "Calculating version automatically from Docker Hub..."
-          
-          RAW_VER=$(get_docker_image_latest_version "$(DOCKER_REPO)" "$(DOCKER_ID)" "$(DOCKER_TOKEN)")
-          
-          if [ "$RAW_VER" == "0.0.0" ] || [ -z "$RAW_VER" ]; then
-            NEW_VER="0.0.1"
-          else
-            NEW_VER=$(echo $RAW_VER | awk -F. '{$NF = $NF + 1;} 1' OFS=.)
-          fi
-          
-          info_msg "Current version found: $RAW_VER"
-          info_msg "Calculated new version: $NEW_VER"
+          NEW_VER=$(get_docker_image_latest_version "${{ parameters.dockerRepo }}" "${{ parameters.dockerId }}" "${{ parameters.dockerToken }}")
+          NEW_VER=$(echo $NEW_VER | awk -F. '{$NF = $NF + 1;} 1' OFS=.)
         else
           NEW_VER="$(MANUALLY_SETUP_APP_VERSION)"
-          info_msg "MANUALLY_SETUP_APP_VERSION is set to $NEW_VER. Skipping auto-calculation."
         fi
-        
         echo "##vso[task.setvariable variable=APP_VERSION;isOutput=true]$NEW_VER"
       name: CalculateAppVersion
       displayName: 'Calculate Application Version'
