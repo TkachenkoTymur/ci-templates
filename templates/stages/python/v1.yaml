@@ -13,18 +13,20 @@ stages:
       VERSION: ${{ parameters.appVersion }}
     steps:
     - script: |
-        pip install -r users-api/requirements.txt
+        cd users-api
+        
+        pip install -r requirements.txt
         pip install pytest pytest-azurepipelines httpx fastapi
         
-        export PYTHONPATH=$PYTHONPATH:$(Build.SourcesDirectory)/users-api
+        export PYTHONPATH=$PYTHONPATH:.
         
-        pytest users-api/tests --junitxml=$(System.DefaultWorkingDirectory)/test-results.xml
+        pytest tests --junitxml=../test-results.xml
       displayName: 'Run Unit Tests'
 
     - task: PublishTestResults@2
       inputs:
         testResultsFormat: 'JUnit'
-        testResultsFiles: '$(System.DefaultWorkingDirectory)/test-results.xml'
+        testResultsFiles: '**/test-results.xml'
         mergeTestResults: true
         failTaskOnFailedTests: true
       displayName: 'Publish Unit Test Report'
