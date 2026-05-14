@@ -16,7 +16,3 @@ stages:
         pip install -r users-api/requirements.txt
         echo "Build successful for version $(VERSION)"
       displayName: 'Build project'
-    - task: PublishTestResults@2
-      inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: '$(System.DefaultWorkingDirectory)/test-results.xml'
