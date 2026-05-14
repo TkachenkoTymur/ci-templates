@@ -19,7 +19,6 @@ stages:
         pip install -r requirements.txt
         pip install pytest pytest-azurepipelines httpx fastapi
         
-        # Ми кажемо Python: "Запусти pytest так, ніби папка users-api — це корінь"
         python -m pytest tests/ --junitxml=../test-results.xml
       displayName: 'Run Unit Tests'
 
