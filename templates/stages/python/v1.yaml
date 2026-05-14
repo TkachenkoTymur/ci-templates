@@ -13,7 +13,10 @@ stages:
     steps:
     - script: |
         pip install -r users-api/requirements.txt
-        pip install pytest pytest-azurepipelines
+        pip install pytest pytest-azurepipelines httpx
+        
+        export PYTHONPATH=$PYTHONPATH:$(pwd)/users-api/src
+        
         pytest users-api/tests --junitxml=$(System.DefaultWorkingDirectory)/test-results.xml
       displayName: 'Run Unit Tests'
 
