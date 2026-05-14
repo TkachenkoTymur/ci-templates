@@ -1,5 +1,5 @@
 parameters:
-- name: ciTemplatesRepo
+- name: ciTemplates
   type: string
 - name: dockerId
   type: string
@@ -16,10 +16,13 @@ stages:
     displayName: 'Pre-Build Analysis'
     steps:
     - checkout: self
-    - checkout: ${{ parameters.ciTemplatesRepo }}
+    - [cite_start]checkout: ${{ parameters.ciTemplates }}
+
     - script: |
-        source $(Build.SourcesDirectory)/${{ parameters.ciTemplatesRepo }}/common-scripts/logging.sh
-        source $(Build.SourcesDirectory)/${{ parameters.ciTemplatesRepo }}/common-scripts/dockerhub.sh
+        # Використовуємо шлях з параметром [cite: 177]
+        source $(Build.SourcesDirectory)/${{ parameters.ciTemplates }}/common-scripts/logging.sh
+        source $(Build.SourcesDirectory)/${{ parameters.ciTemplates }}/common-scripts/dockerhub.sh
+        
         if [ -z "$(MANUALLY_SETUP_APP_VERSION)" ]; then
           NEW_VER=$(get_docker_image_latest_version "${{ parameters.dockerRepo }}" "${{ parameters.dockerId }}" "${{ parameters.dockerToken }}")
           NEW_VER=$(echo $NEW_VER | awk -F. '{$NF = $NF + 1;} 1' OFS=.)
