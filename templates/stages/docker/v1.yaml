@@ -13,8 +13,6 @@ stages:
   condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'main'))
   jobs:
   - job: JobID_BuildAndPushDockerImage
-    variables:
-      VER: ${{ parameters.appVersion }}
     steps:
     - checkout: self
     - task: Docker@2
@@ -25,4 +23,4 @@ stages:
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
         tags: |
-          $(VER)
+          ${{ parameters.appVersion }}
