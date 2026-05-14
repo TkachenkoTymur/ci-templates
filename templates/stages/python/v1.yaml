@@ -16,8 +16,7 @@ stages:
         pip install -r users-api/requirements.txt
         pip install pytest pytest-azurepipelines httpx fastapi
         
-        # Це найважливіший рядок, який лікує "No module named 'main'"
-        export PYTHONPATH=$PYTHONPATH:$(Build.SourcesDirectory)/users-api/src
+        export PYTHONPATH=$PYTHONPATH:$(Build.SourcesDirectory)/users-api
         
         pytest users-api/tests --junitxml=$(System.DefaultWorkingDirectory)/test-results.xml
       displayName: 'Run Unit Tests'
