@@ -11,4 +11,16 @@ stages:
     variables:
       VERSION: ${{ parameters.appVersion }}
     steps:
-    - script: echo "Building version $(VERSION)"
+    - script: |
+        pip install -r users-api/requirements.txt
+        pip install pytest pytest-azurepipelines
+        pytest users-api/tests --junitxml=$(System.DefaultWorkingDirectory)/test-results.xml
+      displayName: 'Run Unit Tests'
+
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '$(System.DefaultWorkingDirectory)/test-results.xml'
+        mergeTestResults: true
+        failTaskOnFailedTests: true
+      displayName: 'Publish Unit Test Report'
